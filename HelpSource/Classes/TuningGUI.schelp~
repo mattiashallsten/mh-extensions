@@ -1,0 +1,41 @@
+TITLE:: TuningGUI
+summary:: tuning utility
+
+DESCRIPTION::
+A utility for generating just intonated saw tooths, used for tuningh.
+
+CLASSMETHODS::
+private:: categories
+
+METHOD:: new, show
+
+argument::rootFreq
+root frequency in Hertz
+
+argument::ratios
+an array with array pairs
+
+argument::output
+the output to play back sound through
+
+returns::
+a window
+
+EXAMPLES::
+
+some notes:
+code::
+t = TuningGUI.new(200, [
+    [1,1],
+    [9,8],
+    [5,4],
+    [4,3],
+    [3,2],
+    [5,3],
+    [15,8]
+];
+
+t.show
+::
+
+Categories
