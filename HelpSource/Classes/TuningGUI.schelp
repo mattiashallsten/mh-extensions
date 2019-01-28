@@ -2,7 +2,7 @@ TITLE:: TuningGUI
 summary:: tuning utility
 
 DESCRIPTION::
-A utility for generating just intonated saw tooths, used for tuning.
+A utility for generating just intonated saw tooth waves, used for tuning.
 
 CLASSMETHODS::
 private:: categories
@@ -26,6 +26,15 @@ INSTANCEMETHODS::
 method:: show
 shows the GUI window
 returns:: the GUI
+
+method:: output
+returns:: the selected output
+
+method:: ratios
+returns:: the array of ratios
+
+method:: rootFreq
+returns:: the root frequency
 
 EXAMPLES::
 
