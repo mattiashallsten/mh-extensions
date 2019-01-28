@@ -9,9 +9,6 @@ TuningGUI {
 		^super.newCopyArgs(rootFreq, ratios, output).initTuningGUI;
 	}
 
-
-	
-
 	initTuningGUI {
 		var splitIntoRows = {| array |
 			var rows = (array.size / 4).ceil.asInteger;
@@ -78,7 +75,7 @@ TuningGUI {
 
 			}
 		};
-
+		
 		buttons = splitIntoRows.value(buttons);
 
 		window.layout = VLayout(
