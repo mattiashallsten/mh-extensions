@@ -5,11 +5,33 @@ TuningGUI {
 	// GUI variables
 	var window, inputRoot, inputOutput, buttons;
 
-	*new {|rootFreq = 100, ratios, output = 0|
+		*new {|rootFreq = 100, ratios, output = 0|
 		^super.newCopyArgs(rootFreq, ratios, output).initTuningGUI;
 	}
 
+
+	
+
 	initTuningGUI {
+		var splitIntoRows = {| array |
+			var rows = (array.size / 4).ceil.asInteger;
+
+			var newArray = Array.fill(rows, {| i |
+				var layout = [];
+				array.do({| item, j |
+					if((j >= (i*4))&&(j < ((i+1)*4)), {
+						layout = layout.add(item)
+					})
+				});
+
+				HLayout(*layout);
+			});
+
+			newArray;
+		};
+
+
+		
 		synths = nil!ratios.size;
 
 		SynthDef(\tuneSaw, {|freq=100, gate=1, out=0|
@@ -37,27 +59,6 @@ TuningGUI {
 			])
 		});
 
-		window.layout = VLayout(
-			HLayout(
-				VLayout(
-					StaticText().string_("Root freq:").align_(\center),
-					inputRoot = TextField().string_(rootFreq.asString).align_(\center),
-				),
-				VLayout(
-					StaticText().string_("Output:").align_(\center),
-					inputOutput = PopUpMenu().items_(["0", "1"])
-				)
-			),
-			HLayout(*buttons)
-		);
-
-		inputRoot.action = {| field |
-			rootFreq = field.value.asInteger
-		};
-		inputOutput.action = {| field |
-			output = field.value.asInteger
-		};
-
 		buttons.do{| item, i |
 			item.action = {| button |
 				var state = button.value;
@@ -77,6 +78,31 @@ TuningGUI {
 
 			}
 		};
+
+		buttons = splitIntoRows.value(buttons);
+
+		window.layout = VLayout(
+			HLayout(
+				VLayout(
+					StaticText().string_("Root freq:").align_(\center),
+					inputRoot = TextField().string_(rootFreq.asString).align_(\center),
+				),
+				VLayout(
+					StaticText().string_("Output:").align_(\center),
+					inputOutput = PopUpMenu().items_(["0", "1"])
+				)
+			),
+			VLayout(*buttons);
+		);
+
+		inputRoot.action = {| field |
+			rootFreq = field.value.asInteger
+		};
+		inputOutput.action = {| field |
+			output = field.value.asInteger
+		};
+
+		
 	}
 
 	show {
