@@ -1,22 +1,22 @@
 TuningGUI {
-	var <>rootFreq, <ratios, <output;
+	var <>rootFreq, <ratios, <output, rowSize;
 	var synths;
 
 	// GUI variables
 	var window, inputRoot, inputOutput, buttons;
 
-		*new {|rootFreq = 100, ratios, output = 0|
-		^super.newCopyArgs(rootFreq, ratios, output).initTuningGUI;
+		*new {|rootFreq = 100, ratios, output = 0, rowSize = 4|
+		^super.newCopyArgs(rootFreq, ratios, output, rowSize).initTuningGUI;
 	}
 
 	initTuningGUI {
 		var splitIntoRows = {| array |
-			var rows = (array.size / 4).ceil.asInteger;
+			var rows = (array.size / rowSize).ceil.asInteger;
 
 			var newArray = Array.fill(rows, {| i |
 				var layout = [];
 				array.do({| item, j |
-					if((j >= (i*4))&&(j < ((i+1)*4)), {
+					if((j >= (i*rowSize))&&(j < ((i+1)*rowSize)), {
 						layout = layout.add(item)
 					})
 				});
@@ -28,12 +28,12 @@ TuningGUI {
 		};
 
 
-		
+
 		synths = nil!ratios.size;
 
 		SynthDef(\tuneSaw, {|freq=100, gate=1, out=0|
 			var env = Env.asr(0.01,1,0.01).kr(2, gate) * 0.2;
-			var sig = Saw.ar(freq, env);
+			var sig = Saw.ar(freq.lag, env);
 
 			Out.ar(out, sig)
 		}).add;
@@ -63,7 +63,9 @@ TuningGUI {
 				switch(state,
 					0, {
 						if(synths[i].notNil, {
-							synths[i].set(\gate,0)})
+							synths[i].set(\gate,0);
+							synths[i] = nil
+						})
 					},
 					1, {
 						synths[i] = Synth(\tuneSaw, [
@@ -75,7 +77,7 @@ TuningGUI {
 
 			}
 		};
-		
+
 		buttons = splitIntoRows.value(buttons);
 
 		window.layout = VLayout(
@@ -93,16 +95,31 @@ TuningGUI {
 		);
 
 		inputRoot.action = {| field |
-			rootFreq = field.value.asInteger
+			rootFreq = field.value.asInteger;
+			synths.do({| item, i |
+				if(item.notNil, {
+					item.set(\freq, rootFreq * ratios[i][0] / ratios[i][1])
+				})
+			})
 		};
 		inputOutput.action = {| field |
 			output = field.value.asInteger
 		};
 
-		
+
 	}
 
 	show {
+		if(window.isClosed, {"window is closed!".postln});
 		window.front;
+	}
+
+	setRoot {| freq |
+		rootFreq = freq;
+		synths.do({| item, i |
+			if(item.notNil, {
+				item.set(\freq, rootFreq * ratios[i][0] / ratios[i][1])
+			})
+		})
 	}
 }
